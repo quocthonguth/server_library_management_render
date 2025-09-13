@@ -6,14 +6,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(
+    origins = "https://library-management-frontend-3nyy.onrender.com",
+    allowedHeaders = "*",
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS}
+)
 public class UserController {
     private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    // --- OPTIONS handler cho preflight ---
+    @RequestMapping(method = RequestMethod.OPTIONS, path = "/**")
+    public ResponseEntity<?> handleOptions() {
+        return ResponseEntity.ok().build(); // trả về 200 OK cho preflight
     }
 
     @GetMapping
@@ -26,20 +36,6 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-//        try {
-//            boolean deleted = userService.deleteUserById(id);
-//            if (!deleted) {
-//                return ResponseEntity.notFound().build(); // 404
-//            }
-//            return ResponseEntity.noContent().build(); // 204
-//        } catch (IllegalStateException e) {
-//            return ResponseEntity.badRequest().body(e.getMessage()); // 400 + message
-//        }
-//    }
-
-    // Ẩn user
     @PutMapping("/{id}/hide")
     public ResponseEntity<String> hideUser(@PathVariable Long id) {
         boolean result = userService.hideUserById(id);
@@ -50,7 +46,6 @@ public class UserController {
         }
     }
 
-    // Hiện lại user
     @PutMapping("/{id}/unhide")
     public ResponseEntity<String> unhideUser(@PathVariable Long id) {
         boolean result = userService.unhideUserById(id);
